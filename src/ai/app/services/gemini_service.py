@@ -77,11 +77,19 @@ order_ticket = FunctionDeclaration(
         "properties": {
             "ticket": {
                 "type": "string",
-                "description": "The ticket to order",
+                "description": "The ticket to confirm",
             },
-            "quantity": {
+            "amount": {
                 "type": "number",
-                "description": "The quantity of tickets to order",
+                "description": "The quantity of tickets to confirm",
+            },
+            "price": {
+                "type": "number",
+                "description": "The price of the ticket",
+            },
+            "zones": {
+                "type": "string",
+                "description": "The zones covered by the ticket",
             },
         },
         "required": [
@@ -101,9 +109,21 @@ recharge_card = FunctionDeclaration(
                 "type": "string",
                 "description": "The card to recharge",
             },
+            "ticket": {
+                "type": "string",
+                "description": "The ticket that will be put on the card",
+            },
             "amount": {
                 "type": "number",
-                "description": "The amount to recharge",
+                "description": "The quantity of tickets to confirm",
+            },
+            "price": {
+                "type": "number",
+                "description": "The price of the ticket",
+            },
+            "zones": {
+                "type": "string",
+                "description": "The zones covered by the ticket",
             },
         },
         "required": [
@@ -113,11 +133,39 @@ recharge_card = FunctionDeclaration(
     },
 )
 
+# confirm_purchase = FunctionDeclaration(
+#     name="confirm_purchase",
+#     description="Confirm the purchase",
+#     parameters={
+#         "type": "object",
+#         "properties": {
+#             "ticket": {
+#                 "type": "string",
+#                 "description": "The ticket to confirm",
+#             },
+#             "amount": {
+#                 "type": "number",
+#                 "description": "The quantity of tickets to confirm",
+#             },
+#             "price": {
+#                 "type": "number",
+#                 "description": "The price of the ticket",
+#             },
+#             "zones": {
+#                 "type": "string",
+#                 "description": "The zones covered by the ticket",
+#             },
+#         },
+#     },
+# )
+
 fgc_tool = Tool(
     function_declarations=[
         get_available_tickets,
         get_available_lines,
         order_ticket,
+        recharge_card,
+        # confirm_purchase,
     ],
 )
 
@@ -127,33 +175,57 @@ class GeminiService:
         self.location = location
         self.max_quantity = max_quantity
 
-        options = {
-        }
+        self.options = {}
+
+        # system_instruction = f"""
+        # You are building a chatbot that helps users use the FGC (Ferrocarrils de la Generalitat de Catalunya) in Barcelona.
+        # The chatbot should be able to help users buy a ticket (Transport card) or recharge an existing transport card.
+        # The chatbot should be able to provide information about the different types of tickets available, their prices, and the zones they cover.
+        # Do not ask the user where they are, as you know that the ticket machine is in {self.location}, so the user is in {self.location}. Do not ask the user their destination; ask them how many zones they want to travel through.
+        # Always use tools to get the information about the tickets and lines; do not assume the information.
+        # Always show the prices of the tickets, and if the user asks for the price of a ticket, show the price of the ticket they asked for.
+        # Always show the zones of the tickets, and if the user asks for the zones of a ticket, show the zones of the ticket they asked for.
+        # Always ask for zones; do not assume the user wants to travel to a specific zone.
+        # The chatbot should be able to provide information about available tickets and lines if the user asks for it.
+        # Some tickets are for FM (Families Monoparentals) and FN (Families Nombroses). If the user asks for a ticket of this type, ask them if they are a FM or FN.
+        # Do not allow the user to buy a ticket with a discount if they are not a FM or FN. They also need to provide their Familia Monoparental or Familia Numerosa card number to get these tickets.
+        # Allow only buying a maximum of {self.max_quantity} tickets at a time.
+        # Always ask the user if they want to buy a ticket or recharge an existing transport card.
+        # Always get their Familia Monoparental or Familia Numerosa status before showing the tickets.
+
+        # In case of recharge, the user should have scanned the card before asking for the recharge. Do not allow the user to recharge a card if they have not scanned it. Do not ask the user for the card number, as you know the card number from the scan.
+
+        # You will get {options} as a JSON with info from the machine, like the card number, the ticket number, if the user has a Familia Monoparental or Familia Numerosa card, if the user has scanned the card, etc. Use this information to provide the user with the information they need.
+
+        # If the user confirms the purchase, send the order to the machine. If the user confirms the recharge, send the recharge to the machine.
+        # """
 
         system_instruction = f"""
-        If user says "Hola", respond with "Hola", and ask him how you can help him. Always answer in Spanish or Catalan.
-        You are building a chatbot that helps users using the FGC (Ferrocarrils de la Generalitat de Catalunya) in Barcelona.
-        Also, the chatbot should be able to help users buy a ticket (Transport card) or recharge an existing transport card.
-        The chatbot should be able to provide information about the different types of tickets available, the prices, and the zones they cover.
-        You should not ask the user where he is, as you know that the ticket machine is in {self.location}, so the user is in {self.location}. Don't ask the user the destination, ask him how many zones he wants to travel.
-        Always use tools to get the information about the tickets and lines, don't assume the information.
-        Always show the prices of the tickets, and if the user asks for the price of a ticket, show the price of the ticket he asked for.
-        Always show the zones of the tickets, and if the user asks for the zones of a ticket, show the zones of the ticket he asked for.
-        Always ask for zones, don't assume the user wants to travel to a specific zone.
-        The chatbot should be able to provide information about available tickets and lines if the user asks for it.
-        Some tickets are for FM (Families Monoparentals) and FN (Families Nombroses). If the user asks for a ticket of this type, ask him if he is a FM or FN. 
-        Don't allow the user to buy a ticket with a discount if he is not a FM or FN. He also needs to provide his Familia Monoparental or Familia Numerosa card number to get these tickets.
-        Allow only buying a maximum of {self.max_quantity} tickets at a time.
-        Always ask the user if he wants to buy a ticket or recharge an existing transport card.
-        Always get his Familia Monoparental or Familia Numerosa status before showing the tickets. 
+        Eres un chatbot que ayuda a los usuarios a utilizar los FGC (Ferrocarrils de la Generalitat de Catalunya) en Barcelona.
+        El chatbot debe ser capaz de ayudar a los usuarios a comprar un billete (tarjeta de transporte) o recargar una tarjeta de transporte existente.
+        El chatbot debe ser capaz de proporcionar información sobre los diferentes tipos de billetes disponibles, sus precios y las zonas que cubren.
+        No preguntes al usuario dónde está, ya que sabes que la máquina de billetes está en {self.location}, por lo que el usuario está en {self.location}. No preguntes al usuario su destino; pregúntale cuántas zonas quiere viajar.
+        Siempre utiliza herramientas para obtener la información sobre los billetes y líneas; no asumas la información.
+        Siempre muestra los precios de los billetes, y si el usuario pregunta por el precio de un billete, muestra el precio del billete que ha preguntado.
+        Siempre muestra las zonas de los billetes, y si el usuario pregunta por las zonas de un billete, muestra las zonas del billete que ha preguntado.
+        Siempre pregunta por las zonas; no asumas que el usuario quiere viajar a una zona específica.
+        El chatbot debe ser capaz de proporcionar información sobre los billetes y líneas disponibles si el usuario lo solicita.
+        Algunos billetes son para FM (Familias Monoparentales) y FN (Familias Numerosas). Si el usuario pide un billete de este tipo, pregúntale si es FM o FN.
+        No permitas que el usuario compre un billete con descuento si no es FM o FN. También debe proporcionar su número de tarjeta de Familia Monoparental o Familia Numerosa para obtener estos billetes.
+        Permite la compra de un máximo de {self.max_quantity} billetes a la vez.
+        Siempre pregunta al usuario si quiere comprar un billete o recargar una tarjeta de transporte existente.
+        Siempre obtén su estado de Familia Monoparental o Familia Numerosa antes de mostrar los billetes.
 
-        In case of recharge, user should have scanned the card before asking for the recharge. Don't allow the user to recharge a card if he hasn't scanned it. Don't ask the user for the card number, as you know the card number from the scan.
+        En caso de recarga, el usuario debe haber escaneado la tarjeta antes de pedir la recarga. No permitas que el usuario recargue una tarjeta si no la ha escaneado. No preguntes al usuario por el número de la tarjeta, ya que conoces el número de la tarjeta por el escaneo.
+        Pide al usuario que tipo de billete quiere comprar para recargar su tarjeta, y cuántos billetes quiere comprar. No permitas que el usuario compre más de {self.max_quantity} billetes a la vez para recargar su tarjeta.
+        
+        Recibirás a cada conversación un JSON  {self.options} con información de la máquina, como el número de tarjeta, el número de billete, si el usuario tiene una tarjeta de Familia Monoparental o Familia Numerosa, si el usuario ha escaneado la tarjeta, etc. Usa esta información para proporcionar al usuario la información que necesita.
 
-        You will get {options} as a json with info from the machine, like the card number, the ticket number, if the user has a Familia Monoparental or Familia Numerosa card, 
-        if the user has scanned the card, etc. Use this information to provide the user with the information he needs.
-
+        Si el usuario confirma la compra, envía el pedido a la máquina. Si el usuario confirma la recarga, envía la recarga a la máquina.
         """
 
+
+        
         self.model = GenerativeModel(
             "gemini-1.5-pro-preview-0514",
             generation_config=GenerationConfig(temperature=0),
@@ -161,7 +233,7 @@ class GeminiService:
             system_instruction=system_instruction,
         )
 
-        self.chat = self.model.start_chat() 
+        self.chat = self.model.start_chat()
     
     def run_cli(self):
         # prompt = "Me gustaría pedir un nuevo billete a FGC. ¿Pueden ayudarme? Soy Familia Monoparental y quiero viajar a 2 zonas."
@@ -188,15 +260,28 @@ class GeminiService:
         while True:
             q = input("Enter your question: ")
 
-            response = self.chat.send_message(q) # Send the user's question to Gemini
+            op = input("Enter your options: ")
 
-            function_calls = self.extract_function_calls(response)
-
-            print(function_calls)
+            if op:
+                self.options = {
+                    "options": op
+                }
 
             try:
+                joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
+
+                print(f"Options: {joined_options}")
+
+                joined_message = f"{q} {joined_options}"
+
+                response = self.chat.send_message(joined_message) # Send the user's question to Gemini
+
+                function_calls = self.extract_function_calls(response)
+
+                print(function_calls)
+
                 if function_calls:
-                    self.call_functions(function_calls)
+                    print(self.call_functions(function_calls))
                 elif response.text:
                     print(response.text)
             except Exception as e:
@@ -221,6 +306,9 @@ class GeminiService:
 
         result = None
 
+        action = None
+        options = None
+
         # Loop over multiple function calls
         for function_call in function_calls:
             # Extract the function name
@@ -231,8 +319,29 @@ class GeminiService:
             # Determine which external API call to make
             if function_name == "get_available_tickets":
                 result = get_fgc_tickets(function_call["get_available_tickets"]["origin"], function_call["get_available_tickets"]["zone"], function_call["get_available_tickets"]["familia_numerosa_o_monoparental"])
+                action = "show_tickets"
             elif function_name == "get_available_lines":
                 result = get_fgc_lines()
+                action = "show_lines"
+            elif function_name == "order_ticket":
+                # We return go_to_payment as the action to be taken by the machine
+                options = {
+                    "ticket": function_call["order_ticket"]["ticket"],
+                    "amount": function_call["order_ticket"]["amount"],
+                    "price": function_call["order_ticket"]["price"],
+                    "zones": function_call["order_ticket"]["zones"],
+                }
+                action = "go_to_payment"
+            elif function_name == "recharge_card":
+                # We return go_to_payment as the action to be taken by the machine
+                options = {
+                    "card": function_call["recharge_card"]["card"],
+                    "ticket": function_call["recharge_card"]["ticket"],
+                    "amount": function_call["recharge_card"]["amount"],
+                    "price": function_call["recharge_card"]["price"],
+                    "zones": function_call["recharge_card"]["zones"],
+                }
+                action = "go_to_payment"
 
             # Collect all API responses
             api_response[function_name] = result
@@ -250,32 +359,71 @@ class GeminiService:
 
             print(response.text)
 
-            return response.text
+            return  {
+                "audio": response.text,
+                "action": action,
+                "options": options
+            }
+                   
         
         except Exception as e:
             print(str(e))
-            return str(e)
+            return {
+                "audio": "Error processing the request",
+                "action": "",
+                "options": {}
+            }
     
 
     def text_to_sql(self, text: str) -> str:
-        response = self.chat.send_message(text)
+        joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
+
+        print(f"Options: {joined_options}")
+
+        joined_message = f"{text} {joined_options}"
+
+        response = self.chat.send_message(joined_message) # Send the user's question to Gemini
 
         function_calls = self.extract_function_calls(response)
 
-        if function_calls:
-            return self.call_functions(function_calls)
-        elif response.text:
-            return response.text
+        try:
+            if function_calls:
+                return self.call_functions(function_calls)
+            elif response.text:
+                return {
+                    "audio": response.text,
+                    "action": "just_talk",
+                    "options": {}
+                }
+        except Exception as e:
+            print(str(e))
+            return {
+                "audio": "Error processing the request",
+                "action": "",
+                "options": {}
+            }
         
     def initial_poke(self):
-        response = self.chat.send_message("Hola")
+        try:
+            response = self.chat.send_message("Hola")
 
-        function_calls = self.extract_function_calls(response)
+            function_calls = self.extract_function_calls(response)
 
-        if function_calls:
-            return self.call_functions(function_calls)
-        elif response.text:
-            return response.text
+            if function_calls:
+                return self.call_functions(function_calls)
+            elif response.text:
+                return {
+                    "audio": response.text,
+                    "action": "just_talk",
+                    "options": {}
+                }
+        except Exception as e:
+            print(str(e))
+            return {
+                "audio": "Error processing the request",
+                "action": "",
+                "options": {}
+            }
 
 if __name__ == "__main__":
     gemini_service = GeminiService()
