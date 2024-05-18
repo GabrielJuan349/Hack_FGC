@@ -17,3 +17,7 @@ rsa==4.9
 urllib3==2.2.1
 python-dotenv==1.0.1
 google-cloud-speech==2.26.0
+fastapi~=0.111.0
+torch~=2.3.0+cu121
+pydub~=0.25.1
+pyannote.audio
