@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from classes.speaker_diarization import SpeakerDiarization
+from tts.transform_Text_Speech import speech_to_text
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
@@ -29,8 +30,11 @@ async def read_root():
 
 @app.get("/call_gemini")
 async def read_item(model: Request) -> Response:
-    most_relevant_speaker = SpeakerDiarization(model.audio).diarization()
+    diarization = SpeakerDiarization(model.audio).diarization()
+    text = speech_to_text(diarization.get("audio"))
+
     return Response(
         audio="BASE64_ENCODED_AUDIO",
-        action="go_to_payment"
+        action="go_to_payment",
+        options={"text": text}
     )

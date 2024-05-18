@@ -41,7 +41,7 @@ def speech_to_text(audio_encoded : str):
 
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=48000,
+        sample_rate_hertz=44100,
         language_code="es-ES",
     )
 
