@@ -69,21 +69,43 @@ get_available_tickets = FunctionDeclaration(
     },
 )
 
-# get_order_info_func = FunctionDeclaration(
-#     name="get_order_status",
-#     description="Get information about an order",
-#     parameters={
-#         "type": "object",
-#         "properties": {
-#             "orderid": {"type": "string", "description": "The order ID"},
-#             "zipcode": {"type": "string", "description": "The zipcode where the order was shipped to"},
-#         },
-#             "required": [
-#                     "orderid",
-#                     "zipcode"
-#                 ]
-#     },
-# )
+def call_functions(function_calls: List[Dict]):
+    print("Function calls extracted from response:")
+    print(function_calls)
+    api_response = {}
+
+    result = None
+
+    # Loop over multiple function calls
+    for function_call in function_calls:
+        # Extract the function name
+        print(function_call)
+        for key in function_call:
+            function_name = key
+
+        # Determine which external API call to make
+        if function_name == "get_available_tickets":
+            result = get_fgc_tickets(function_call["get_available_tickets"]["origin"], function_call["get_available_tickets"]["zone"], function_call["get_available_tickets"]["familia_numerosa_o_monoparental"])
+        elif function_name == "get_available_lines":
+            result = get_fgc_lines()
+
+        # Collect all API responses
+        api_response[function_name] = result
+
+
+        # Return the API response to Gemini
+        response = chat.send_message(
+            Part.from_function_response(
+                name=function_name,
+                response={
+                    "content": api_response,
+                },
+            ),
+        )
+
+        print(response.text)
+
+    
 
 get_available_lines = FunctionDeclaration(
     name="get_available_lines",
@@ -150,6 +172,8 @@ fgc_tool = Tool(
 
 location = "Lleida"
 
+max_quantity = 5
+
 system_instruction = f"""
 You are building a chatbot that helps users using the FGC (Ferrocarrils de la Generalitat de Catalunya) in Barcelona.
 Also, the chatbot should be able to help users buy a ticket (Transport card) or recharge an existing transport card.
@@ -161,8 +185,10 @@ Always show the zones of the tickets, and if the user asks for the zones of a ti
 Always ask for zones, don't assume the user wants to travel to a specific zone.
 The chatbot should be able to provide information about available tickets and lines if the user asks for it.
 Some tickets are for FM (Families Monoparentals) and FN (Families Nombroses). If the user asks for a ticket of this type, ask him if he is a FM or FN. 
-Don't allow the user to buy a ticket with a discount if he is not a FM or FN.
-Always get his Familia Monoparental or Familia Numerosa status before showing the tickets.
+Don't allow the user to buy a ticket with a discount if he is not a FM or FN. He also needs to provide his Familia Monoparental or Familia Numerosa card number to get these tickets.
+Allow only buying a maximum of {max_quantity} tickets at a time.
+Always ask the user if he wants to buy a ticket or recharge an existing transport card.
+Always get his Familia Monoparental or Familia Numerosa status before showing the tickets. 
 """
 
 model = GenerativeModel(
@@ -173,16 +199,22 @@ model = GenerativeModel(
 )
 chat = model.start_chat()
 
-prompt = "Me gustaría pedir un nuevo billete a FGC. ¿Pueden ayudarme?" # Soy Familia Monoparental y quiero viajar a 2 zonas."
+prompt = "Me gustaría pedir un nuevo billete a FGC. ¿Pueden ayudarme?  Soy Familia Monoparental y quiero viajar a 2 zonas."
 
 response = chat.send_message(prompt)
 
-if response.text:
-    print(response.text)
+try:
+    if response.text:
+        print(response.text)
+except Exception as e:
+    print(str(e))
 
 function_calls = extract_function_calls(response)
 
 print(function_calls)
+        
+if function_calls:
+    call_functions(function_calls)
 
 
 while True:
@@ -195,40 +227,7 @@ while True:
     print(function_calls)
 
     if function_calls:
-        print("Function calls extracted from response:")
-        print(function_calls)
-        api_response = {}
-
-        # Loop over multiple function calls
-        for function_call in function_calls:
-            # Extract the function name
-            print(function_call)
-            for key in function_call:
-                function_name = key
-
-            # Determine which external API call to make
-            if function_name == "get_available_tickets":
-                result = get_fgc_tickets(function_call["get_available_tickets"]["origin"], function_call["get_available_tickets"]["zone"], function_call["get_available_tickets"]["familia_numerosa_o_monoparental"])
-            elif function_name == "get_available_lines":
-                result = get_fgc_lines()
-
-            # Collect all API responses
-            api_response[function_name] = result
-
-
-            # Return the API response to Gemini
-            response = chat.send_message(
-                Part.from_function_response(
-                    name=function_name,
-                    response={
-                        "content": api_response,
-                    },
-                ),
-            )
-
-
-            print(response.text)
-
+        call_functions(function_calls)
     elif response.text:
         print(response.text)
 
