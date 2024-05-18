@@ -141,44 +141,45 @@ def comprarTM():
 
     tticket = ctk.CTkLabel(
         button_frame, text=f"Tipus de bitllet", text_color='gray', font=(FONT_TYPE, BODY))
-    tticket.grid(row=1, column=0, columnspan=2, padx=20, pady=(0,0), sticky="nw")
+    tticket.grid(row=1, column=0, padx=20, pady=(0,0), sticky="nw")
     tticket = ctk.CTkComboBox(
-        button_frame, values=get_tipus_from_dataset(), text_color='black', font=(FONT_TYPE, BODY))
-    tticket.grid(row=2, column=0, columnspan=2, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+        button_frame, values=get_tipus_from_dataset(), text_color='black',width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=2, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
 
     zones = ctk.CTkLabel(
         button_frame, text=f"Zones", text_color='gray', font=(FONT_TYPE, BODY))
-    zones.grid(row=3, column=0, padx=20, pady=(0,0), sticky="nw")
+    zones.grid(row=1, column=1, padx=20, pady=(ENTRE_TEXT,0), sticky="nw")
     zones = ctk.CTkLabel(
         button_frame, text="-   1   +", text_color='black', font=(FONT_TYPE, BODY))
-    zones.grid(row=4, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+    zones.grid(row=2, column=1, padx=20, pady=(0,40), sticky="nw")
     
     quant = ctk.CTkLabel(
         button_frame, text=f"Quantitat", text_color='gray', font=(FONT_TYPE, BODY))
     quant.grid(row=3, column=1, padx=20, pady=(0,0), sticky="nw")
     quant = ctk.CTkLabel(
         button_frame, text="-   1   +", text_color='black', font=(FONT_TYPE, BODY))
-    quant.grid(row=4, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+    quant.grid(row=4, column=1, padx=20, pady=(0,40), sticky="nw")
     
 
-    viatges = ctk.CTkLabel(
-        button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY))
-    viatges.grid(row=5, column=0, columnspan=2, padx=20, pady=(ENTRE_TEXT,ENTRE_TEXT), sticky="nw")
-    viatges = ctk.CTkLabel(
-        button_frame, text=f"4,15 €", text_color='black', font=(FONT_TYPE, BODY+4))
-    viatges.grid(row=5, column=1, columnspan=2, padx=20, pady=(0,40), sticky="nw")
+    quant = ctk.CTkLabel(
+        button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY+4))
+    quant.grid(row=3, column=0, padx=20, pady=(0,0), sticky="nw")
+    quant = ctk.CTkLabel(
+        button_frame, text="4,50€", text_color='black', font=(FONT_TYPE, BODY+4))
+    quant.grid(row=4, column=0, padx=20, pady=(0,40), sticky="nw")
+
 
     b_recarregaTM = ctk.CTkButton(
         button_frame, text="Pagar", height=80, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
         command=pagar
     )
-    b_recarregaTM.grid(row=6, column=0, columnspan=2, padx=5, pady=(5,5), sticky="nsew")
+    b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5,5), sticky="nsew")
 
 def frame_ajuda():
     pass
 
-def novaTM():
+def recarregaTM():
     refresh()
 
     header = ctk.CTkLabel(
@@ -229,6 +230,57 @@ def pagar():
 def refresh():
     for widget in button_frame.winfo_children():
         widget.destroy()
+
+def novaTM():
+    refresh()
+
+    header = ctk.CTkLabel(
+        button_frame, text=f"Nova T-Mobilitat", text_color='black', font=(FONT_TYPE, BODY))
+    header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+
+    tticket = ctk.CTkLabel(
+        button_frame, text=f"Nom", text_color='gray', font=(FONT_TYPE, BODY))
+    tticket.grid(row=1, column=0, padx=20, pady=(0,0), sticky="nw")
+    tticket = ctk.CTkEntry(
+        button_frame, text_color='black',width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=2, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    zones = ctk.CTkLabel(
+        button_frame, text=f"Cognoms", text_color='gray', font=(FONT_TYPE, BODY))
+    zones.grid(row=1, column=1, padx=20, pady=(0,0), sticky="nw")
+    tticket = ctk.CTkEntry(
+        button_frame, text_color='black',width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=2, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    zones = ctk.CTkLabel(
+        button_frame, text=f"Tipus de document", text_color='gray', font=(FONT_TYPE, BODY))
+    zones.grid(row=3, column=0, padx=20, pady=(0,0), sticky="nw")
+
+    tticket = ctk.CTkComboBox(
+        button_frame, values=['DNI', 'NIE'], text_color='black',width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=4, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    zones = ctk.CTkLabel(
+        button_frame, text=f"Número de document", text_color='gray', font=(FONT_TYPE, BODY))
+    zones.grid(row=3, column=1, padx=20, pady=(0,0), sticky="nw")
+    tticket = ctk.CTkEntry(
+        button_frame, text_color='black',width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=4, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    zones = ctk.CTkLabel(
+        button_frame, text=f"Data de naixement", text_color='gray', font=(FONT_TYPE, BODY))
+    zones.grid(row=5, column=0, padx=20, pady=(0,0), sticky="nw")
+    tticket = ctk.CTkEntry(
+        button_frame, text_color='black',width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=6, column=0, padx=20, pady=(0,10), sticky="nw")
+
+    b_recarregaTM = ctk.CTkButton(
+        button_frame, text="Següent", height=80, fg_color="#97d700",
+        hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
+        command=pagar
+    )
+    b_recarregaTM.grid(row=7, column=0, columnspan=2, padx=5, pady=(5,5), sticky="nsew")
+
 
 def frame_noTincTM():
     # Clear the existing widgets in the button frame
@@ -288,13 +340,13 @@ def main_menu():
 
     # Initial buttons
     b_tincTM = ctk.CTkButton(
-        button_frame, text="Tinc la\nT-Mobilitat", height=180, fg_color="#97d700",
+        button_frame, text="Tinc la\nT-Mobilitat", height=250, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
         command=frame_tincTM)
     b_tincTM.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
     b_noTincTM = ctk.CTkButton(
-        button_frame, text="Nou Títol", height=180, fg_color="#97d700",
+        button_frame, text="Nou Títol", height=250, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
         command=frame_noTincTM
     )
