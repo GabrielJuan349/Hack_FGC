@@ -99,6 +99,36 @@ order_ticket = FunctionDeclaration(
     },
 )
 
+cancel_order = FunctionDeclaration(
+    name="cancel_order",
+    description="Cancel the order",
+    parameters={
+        "type": "object",
+        "properties": {
+            "ticket": {
+                "type": "string",
+                "description": "The ticket to cancel",
+            },
+            "amount": {
+                "type": "number",
+                "description": "The quantity of tickets to cancel",
+            },
+            "price": {
+                "type": "number",
+                "description": "The price of the ticket",
+            },
+            "zones": {
+                "type": "string",
+                "description": "The zones covered by the ticket",
+            },
+        },
+        "required": [
+            "ticket",
+            "quantity",
+        ],
+    },
+)
+
 recharge_card = FunctionDeclaration(
     name="recharge_card",
     description="Recharge an existing transport card",
@@ -165,6 +195,7 @@ fgc_tool = Tool(
         get_available_lines,
         order_ticket,
         recharge_card,
+        cancel_order,
         # confirm_purchase,
     ],
 )
@@ -217,11 +248,13 @@ class GeminiService:
         Siempre obtén su estado de Familia Monoparental o Familia Numerosa antes de mostrar los billetes.
 
         En caso de recarga, el usuario debe haber escaneado la tarjeta antes de pedir la recarga. No permitas que el usuario recargue una tarjeta si no la ha escaneado. No preguntes al usuario por el número de la tarjeta, ya que conoces el número de la tarjeta por el escaneo.
+        Si la tarjeta es blanca, el usuario asociado a ella es anonimo. Por tanto, no se le puede aplicar el descuento de familia monoparental o numerosa. Avise al usuario de que no se le aplicará el descuento.
         Pide al usuario que tipo de billete quiere comprar para recargar su tarjeta, y cuántos billetes quiere comprar. No permitas que el usuario compre más de {self.max_quantity} billetes a la vez para recargar su tarjeta.
-        
-        Recibirás a cada conversación un JSON  {self.options} con información de la máquina, como el número de tarjeta, el número de billete, si el usuario tiene una tarjeta de Familia Monoparental o Familia Numerosa, si el usuario ha escaneado la tarjeta, etc. Usa esta información para proporcionar al usuario la información que necesita.
 
+        Recibirás a cada conversación un JSON  {self.options} con información que te da la máquina, como por ejemplo el identificador de tarjeta si el usuario quiere recargar, el número de billete, si el usuario tiene una tarjeta de Familia Monoparental o Familia Numerosa, si el usuario ha escaneado la tarjeta, etc. Usa esta información para proporcionar al usuario la información que necesita.
+        
         Si el usuario confirma la compra, envía el pedido a la máquina. Si el usuario confirma la recarga, envía la recarga a la máquina.
+       
         """
 
 
@@ -233,7 +266,7 @@ class GeminiService:
             system_instruction=system_instruction,
         )
 
-        self.chat = self.model.start_chat()
+        self.chat = self.model.start_chat(response_validation=False)
     
     def run_cli(self):
         # prompt = "Me gustaría pedir un nuevo billete a FGC. ¿Pueden ayudarme? Soy Familia Monoparental y quiero viajar a 2 zonas."
@@ -342,6 +375,15 @@ class GeminiService:
                     "zones": function_call["recharge_card"]["zones"],
                 }
                 action = "go_to_payment"
+            elif function_name == "cancel_order":
+                # We return cancel_order as the action to be taken by the machine
+                options = {
+                    "ticket": function_call["cancel_order"]["ticket"],
+                    "amount": function_call["cancel_order"]["amount"],
+                    "price": function_call["cancel_order"]["price"],
+                    "zones": function_call["cancel_order"]["zones"],
+                }
+                action = "cancel_order"
 
             # Collect all API responses
             api_response[function_name] = result
