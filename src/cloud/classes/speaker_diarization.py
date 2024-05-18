@@ -48,6 +48,10 @@ class SpeakerDiarization:
                 speaker_intervals[speaker].append((turn.start, turn.end))
                 speaker_durations[speaker] += (turn.end - turn.start)
 
+            if not speaker_intervals:
+                logging.error("No speaker intervals found.")
+                return None
+
             # Determine the most relevant speaker based on total speaking time
             most_relevant_speaker = max(speaker_durations, key=speaker_durations.get)
             logging.info(f"Total speaking time for each speaker:\n{speaker_durations}")

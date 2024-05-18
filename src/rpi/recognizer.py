@@ -3,6 +3,8 @@ import logging
 import speech_recognition as sr
 import os
 
+from server_communication import ServerCommunication
+
 
 class Recognizer:
     def __init__(self, duration=0.5, timeout=None, phrase_time_limit=None):
@@ -39,7 +41,18 @@ class Recognizer:
 
 
 # Example usage:
-#if __name__ == "__main__":
-#    recognizer = Recognizer()
-#    base64_audio = recognizer.recognize_speech_from_mic()
-#    print(base64_audio)
+if __name__ == "__main__":
+    recognizer = Recognizer(duration=3)
+    base64_audio = recognizer.recognize_speech_from_mic()
+
+    # save the base64 audio to a file
+    with open("base64_audio.txt", "w") as file:
+         file.write(base64_audio) 
+
+    # Example usage
+    server_communication = ServerCommunication({'host': 'http://localhost:8000', 'endpoint': 'call_gemini'})
+    response = server_communication.call_server(frame="frame", location="location",
+                                                audio=base64_audio)
+    print(response)
+
+    

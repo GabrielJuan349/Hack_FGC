@@ -1,19 +1,21 @@
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from classes.speaker_diarization import SpeakerDiarization
 from ai.app.services.tts.transform_Text_Speech import speech_to_text
 
 from ai.app.api.routes import router
+from ai.app.services.gemini_service import GeminiService
 
 
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
-app.include_router(router)
+# app.include_router(router)
 
+gemini_service = GeminiService()
 
 
 
@@ -34,17 +36,50 @@ class Response(BaseModel):
 async def read_root():
     return {"status": "Server is running successfully!"}
 
+import requests
 
 @app.get("/call_gemini")
 async def read_item(model: Request) -> Response:
     diarization = SpeakerDiarization(model.audio).diarization()
+    if diarization is None:
+        return Response(action="error", options=None)
+    
     text = speech_to_text(diarization.get("audio"))
 
-    return Response(
-        audio="BASE64_ENCODED_AUDIO",
-        action="go_to_payment",
-        options={"text": text}
-    )
+    print("text", text)
+
+    response = gemini_service.text_to_sql(text, model.options)
+        
+    print(response)
+
+    return response
+
+
+@router.post("/query")
+async def query(sentence: str, options: dict):
+    print("sentence: ", sentence)
+    try:
+        response = gemini_service.text_to_sql(sentence, options)
+        
+        print(response)
+
+        return response
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.get("/poke")
+async def poke_llm(options: dict):
+    try:
+        response = gemini_service.initial_poke(options)
+
+        print(response)
+        
+        return response
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e)) 
 
 
 if __name__ == "__main__":
