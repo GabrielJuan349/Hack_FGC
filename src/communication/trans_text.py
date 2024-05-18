@@ -1,10 +1,5 @@
 import base64
-import os
-import wave
-import dotenv as dev
 from google.cloud import texttospeech, speech
-
-dev.load_dotenv()
 
 def text_to_speech(input_text : str, type: str = "base64"):
     """Synthesizes speech from the input string of text.
