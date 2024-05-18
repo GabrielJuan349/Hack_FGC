@@ -2,3 +2,5 @@ fastapi~=0.111.0
 torch~=2.3.0+cu121
 pydub~=0.25.1
 pyannote.audio
+pyaudio~=0.2.14
+speechrecognition
