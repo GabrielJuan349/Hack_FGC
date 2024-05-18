@@ -422,8 +422,11 @@ class GeminiService:
 
     
 
-    def text_to_sql(self, text: str) -> str:
+    def text_to_sql(self, text: str, options: Dict):
         try:
+            if options:
+                self.options = options
+            
             joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
 
             print(f"Options: {joined_options}")
@@ -442,8 +445,11 @@ class GeminiService:
             print(str(e))
             self.return_response_json("Error processing the request", "", {})
         
-    def initial_poke(self):
+    def initial_poke(self, options: Dict):
         try:
+            if options:
+                self.options = options
+                
             joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
 
             print(f"Options: {joined_options}")

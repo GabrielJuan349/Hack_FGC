@@ -8,7 +8,7 @@ gemini_service = GeminiService()
 
 
 @router.post("/query")
-async def query(sentence: str):
+async def query(sentence: str, options: dict):
     print("sentence: ", sentence)
     try:
         # global human_input
@@ -16,7 +16,7 @@ async def query(sentence: str):
         #     human_input = False
         #     return langchain_service.text_to_sql(human_input) 
 
-        response = gemini_service.text_to_sql(sentence)
+        response = gemini_service.text_to_sql(sentence, options)
         
         print(response)
 
@@ -27,9 +27,9 @@ async def query(sentence: str):
     
 
 @router.get("/poke")
-async def poke_llm():
+async def poke_llm(options: dict):
     try:
-        response = gemini_service.initial_poke()
+        response = gemini_service.initial_poke(options)
 
         print(response)
         
