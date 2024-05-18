@@ -7,7 +7,9 @@ from assets.utils import *
 
 # Constants for styling
 FONT_TYPE = "Arial"
-BODY = 30
+ENTRE_TEXT = 15
+BODY = 25
+SUBBODY = 20
 BUTTON = 40
 HEADER = 20
 FOOTER = 12
@@ -20,17 +22,214 @@ root = tk.Tk()
 root.title("FGC - Ferrocarrils de la Generalitat de Catalunya")
 root.geometry("400x400+0+500")  # Set the window size
 
+def recarregaTM():
+    print("Recarregar T-Mobilitat")
+
 def ahead_behind_buttons():
     pass
 
+def carregarTM():
+    refresh()
+    # Mostra el nom de l'usuari i la informació de la T-Mobilitat
+    header = ctk.CTkLabel(
+        button_frame, text=f"Títol - T-jove FM/FN general", text_color='black', font=(FONT_TYPE, BODY))
+    header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+
 def frame_tincTM():
-    pass
+    recarrega = False
+    refresh()
+    if recarrega:
+        # Mostra el nom de l'usuari i la informació de la T-Mobilitat
+        header = ctk.CTkLabel(
+            button_frame, text=f"Títol - T-jove FM/FN general", text_color='black', font=(FONT_TYPE, BODY))
+        header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+
+        vigencia = ctk.CTkLabel(
+            button_frame, text=f"Vigencia", text_color='gray', font=(FONT_TYPE, BODY))
+        vigencia.grid(row=1, column=0, padx=20, pady=(0,0), sticky="nw")
+        vigencia = ctk.CTkLabel(
+            button_frame, text=f"Vàlid fins 31/12/2021", text_color='black', font=(FONT_TYPE, BODY))
+        vigencia.grid(row=2, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        trestant = ctk.CTkLabel(
+            button_frame, text=f"Temps restant", text_color='gray', font=(FONT_TYPE, BODY))
+        trestant.grid(row=1, column=1, padx=20, pady=(0,0), sticky="nw")
+        trestant = ctk.CTkLabel(
+            button_frame, text=f"64 dies restants", text_color='black', font=(FONT_TYPE, BODY))
+        trestant.grid(row=2, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        viatges = ctk.CTkLabel(
+            button_frame, text=f"Viatges", text_color='gray', font=(FONT_TYPE, BODY))
+        viatges.grid(row=3, column=0, padx=20, pady=(0,0), sticky="nw")
+        viatges = ctk.CTkLabel(
+            button_frame, text=f"Ilimitats", text_color='black', font=(FONT_TYPE, BODY))
+        viatges.grid(row=4, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        estat = ctk.CTkLabel(
+            button_frame, text=f"Estat", text_color='gray', font=(FONT_TYPE, BODY))
+        estat.grid(row=3, column=1, padx=20, pady=(0,0), sticky="nw")
+        estat = ctk.CTkLabel(
+            button_frame, text=f"Actiu", text_color='black', font=(FONT_TYPE, BODY))
+        estat.grid(row=4, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        zprimerav = ctk.CTkLabel(
+            button_frame, text=f"Zona primera validació", text_color='gray', font=(FONT_TYPE, BODY))
+        zprimerav.grid(row=5, column=0, padx=20, pady=(0,0), sticky="nw")
+        zprimerav = ctk.CTkLabel(
+            button_frame, text=f"Zona 7", text_color='black', font=(FONT_TYPE, BODY))
+        zprimerav.grid(row=6, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+    
+        zones = ctk.CTkLabel(
+            button_frame, text=f"Zones", text_color='gray', font=(FONT_TYPE, BODY))
+        zones.grid(row=5, column=1, padx=20, pady=(0,0), sticky="nw")
+        zones = ctk.CTkLabel(
+            button_frame, text=f"6", text_color='black', font=(FONT_TYPE, BODY))
+        zones.grid(row=6, column=1, padx=20, pady=(0,40), sticky="nw")
+
+        b_recarregaTM = ctk.CTkButton(
+            button_frame, text="Recarrega", height=80, fg_color="#d0deb0", 
+            text_color='gray', font=(FONT_TYPE, BUTTON), hover=False
+        )
+        b_recarregaTM.grid(row=7, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
+
+    else:
+        header = ctk.CTkLabel(
+            button_frame, text=f"Resum de compra", text_color='black', font=(FONT_TYPE, BODY))
+        header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+
+        vigencia = ctk.CTkLabel(
+            button_frame, text=f"Número de viatges", text_color='gray', font=(FONT_TYPE, BODY))
+        vigencia.grid(row=1, column=0, padx=20, pady=(0,0), sticky="nw")
+        vigencia = ctk.CTkLabel(
+            button_frame, text=f"Ilimitats", text_color='black', font=(FONT_TYPE, BODY))
+        vigencia.grid(row=2, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        trestant = ctk.CTkLabel(
+            button_frame, text=f"Validesa", text_color='gray', font=(FONT_TYPE, BODY))
+        trestant.grid(row=1, column=1, padx=20, pady=(0,0), sticky="nw")
+        trestant = ctk.CTkLabel(
+            button_frame, text=f"90 dies des de la \nprimera validació", text_color='black', font=(FONT_TYPE, BODY))
+        trestant.grid(row=2, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        viatges = ctk.CTkLabel(
+            button_frame, text=f"Títol", text_color='gray', font=(FONT_TYPE, BODY))
+        viatges.grid(row=3, column=0, padx=20, pady=(ENTRE_TEXT,ENTRE_TEXT), sticky="nw")
+        viatges = ctk.CTkLabel(
+            button_frame, text=f"T-jove FM/FN general", text_color='black', font=(FONT_TYPE, BODY+4))
+        viatges.grid(row=4, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+        viatges = ctk.CTkLabel(
+            button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY))
+        viatges.grid(row=3, column=1, padx=20, pady=(ENTRE_TEXT,ENTRE_TEXT), sticky="nw")
+        viatges = ctk.CTkLabel(
+            button_frame, text=f"34,15 €", text_color='black', font=(FONT_TYPE, BODY+4))
+        viatges.grid(row=4, column=1, padx=20, pady=(0,40), sticky="nw")
+
+        b_recarregaTM = ctk.CTkButton(
+            button_frame, text="Pagar", height=80, fg_color="#97d700",
+            hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
+            command=pagar
+        )
+        b_recarregaTM.grid(row=6, column=0, columnspan=2, padx=5, pady=(5,5), sticky="nsew")
+
+def comprarTM():
+    refresh()
+
+    header = ctk.CTkLabel(
+        button_frame, text=f"Compra", text_color='black', font=(FONT_TYPE, BODY))
+    header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+
+    tticket = ctk.CTkLabel(
+        button_frame, text=f"Tipus de bitllet", text_color='gray', font=(FONT_TYPE, BODY))
+    tticket.grid(row=1, column=0, columnspan=2, padx=20, pady=(0,0), sticky="nw")
+    tticket = ctk.CTkComboBox(
+        button_frame, values=get_tipus_from_dataset(), text_color='black', font=(FONT_TYPE, BODY))
+    tticket.grid(row=2, column=0, columnspan=2, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    zones = ctk.CTkLabel(
+        button_frame, text=f"Zones", text_color='gray', font=(FONT_TYPE, BODY))
+    zones.grid(row=3, column=0, padx=20, pady=(0,0), sticky="nw")
+    zones = ctk.CTkLabel(
+        button_frame, text="-   1   +", text_color='black', font=(FONT_TYPE, BODY))
+    zones.grid(row=4, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+    
+    quant = ctk.CTkLabel(
+        button_frame, text=f"Quantitat", text_color='gray', font=(FONT_TYPE, BODY))
+    quant.grid(row=3, column=1, padx=20, pady=(0,0), sticky="nw")
+    quant = ctk.CTkLabel(
+        button_frame, text="-   1   +", text_color='black', font=(FONT_TYPE, BODY))
+    quant.grid(row=4, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+    
+
+    viatges = ctk.CTkLabel(
+        button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY))
+    viatges.grid(row=5, column=0, columnspan=2, padx=20, pady=(ENTRE_TEXT,ENTRE_TEXT), sticky="nw")
+    viatges = ctk.CTkLabel(
+        button_frame, text=f"4,15 €", text_color='black', font=(FONT_TYPE, BODY+4))
+    viatges.grid(row=5, column=1, columnspan=2, padx=20, pady=(0,40), sticky="nw")
+
+    b_recarregaTM = ctk.CTkButton(
+        button_frame, text="Pagar", height=80, fg_color="#97d700",
+        hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
+        command=pagar
+    )
+    b_recarregaTM.grid(row=6, column=0, columnspan=2, padx=5, pady=(5,5), sticky="nsew")
 
 def frame_ajuda():
     pass
+
+def novaTM():
+    refresh()
+
+    header = ctk.CTkLabel(
+        button_frame, text=f"Resum de compra", text_color='black', font=(FONT_TYPE, BODY))
+    header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+
+    vigencia = ctk.CTkLabel(
+        button_frame, text=f"Número de viatges", text_color='gray', font=(FONT_TYPE, BODY))
+    vigencia.grid(row=1, column=0, padx=20, pady=(0,0), sticky="nw")
+    vigencia = ctk.CTkLabel(
+        button_frame, text=f"Ilimitats", text_color='black', font=(FONT_TYPE, BODY))
+    vigencia.grid(row=2, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    trestant = ctk.CTkLabel(
+        button_frame, text=f"Validesa", text_color='gray', font=(FONT_TYPE, BODY))
+    trestant.grid(row=1, column=1, padx=20, pady=(0,0), sticky="nw")
+    trestant = ctk.CTkLabel(
+        button_frame, text=f"90 dies des de la \nprimera validació", text_color='black', font=(FONT_TYPE, BODY))
+    trestant.grid(row=2, column=1, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    viatges = ctk.CTkLabel(
+        button_frame, text=f"Títol", text_color='gray', font=(FONT_TYPE, BODY))
+    viatges.grid(row=3, column=0, padx=20, pady=(ENTRE_TEXT,ENTRE_TEXT), sticky="nw")
+    viatges = ctk.CTkLabel(
+        button_frame, text=f"T-jove FM/FN general", text_color='black', font=(FONT_TYPE, BODY+4))
+    viatges.grid(row=4, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+
+    viatges = ctk.CTkLabel(
+        button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY))
+    viatges.grid(row=3, column=1, padx=20, pady=(ENTRE_TEXT,ENTRE_TEXT), sticky="nw")
+    viatges = ctk.CTkLabel(
+        button_frame, text=f"34,15 €", text_color='black', font=(FONT_TYPE, BODY+4))
+    viatges.grid(row=4, column=1, padx=20, pady=(0,40), sticky="nw")
+
+    b_recarregaTM = ctk.CTkButton(
+        button_frame, text="Pagar", height=80, fg_color="#97d700",
+        hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
+        command=pagar
+    )
+    b_recarregaTM.grid(row=6, column=0, columnspan=2, padx=5, pady=(5,5), sticky="nsew")
+
+
+def pagar():
+    pass
+
+
+
 def refresh():
     for widget in button_frame.winfo_children():
         widget.destroy()
+
 def frame_noTincTM():
     # Clear the existing widgets in the button frame
     refresh()
@@ -43,15 +242,13 @@ def frame_noTincTM():
     new_button1 = ctk.CTkButton(
         button_frame, text="Crear nova\nT-Mobilitat", height=180, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
-        command=lambda: carregarTM
-    )
+        command=novaTM)
     new_button1.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
     
     new_button2 = ctk.CTkButton(
-        button_frame, text="Comprar títol\nSenzill", height=180, fg_color="#97d700",
+        button_frame, text="Comprar títol\nsenzill", height=180, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
-        command=lambda: abandonarTM
-    )
+        command=comprarTM)
     new_button2.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
 def reset_main_menu():
@@ -86,15 +283,14 @@ def main_menu():
     button_frame.grid(row=1, column=0, columnspan=2, sticky="nsew")
     button_frame.columnconfigure(0, weight=1)
     button_frame.columnconfigure(1, weight=1)
-    button_frame.rowconfigure(0, weight=1)
-    button_frame.rowconfigure(1, weight=1)
+    '''button_frame.rowconfigure(0, weight=1)
+    button_frame.rowconfigure(1, weight=1)'''
 
     # Initial buttons
     b_tincTM = ctk.CTkButton(
         button_frame, text="Tinc la\nT-Mobilitat", height=180, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
-        command=frame_tincTM
-    )
+        command=frame_tincTM)
     b_tincTM.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
     b_noTincTM = ctk.CTkButton(
@@ -113,7 +309,7 @@ def main_menu():
 
 
 # HEADER FRAME
-header_frame = ttk.Frame(root, padding=PADDING)
+header_frame = ttk.Frame(root, padding=(PADDING, PADDING, 0, 5))
 header_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
 
 # HEADER IMAGE
@@ -133,7 +329,7 @@ button_frame = ttk.Frame(root, padding=PADDING)
 main_menu()
 
 # FOOTER FRAME
-footer_frame = ttk.Frame(root, padding=PADDING)
+footer_frame = ttk.Frame(root, padding=(5, PADDING, 0, PADDING))
 footer_frame.grid(row=2, column=0, columnspan=2, sticky="ew")
 
 # FOOTER LABEL

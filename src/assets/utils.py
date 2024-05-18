@@ -8,3 +8,6 @@ def carregarTM():
 
 def abandonarTM():
     print("Abandonar TM")
+
+def get_tipus_from_dataset():
+    return ['tipus1', 'tipus2']
