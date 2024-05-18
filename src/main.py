@@ -9,8 +9,17 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
 
-class Model(BaseModel):
-    audio: str
+class Request(BaseModel):
+    audio: str | None = None
+    frame: str
+    location: str
+    options: object | None = None
+
+
+class Response(BaseModel):
+    audio: str | None = None
+    action: str
+    options: object | None = None
 
 
 @app.get("/")
@@ -18,7 +27,10 @@ async def read_root():
     return {"status": "Server is running successfully!"}
 
 
-@app.get("/speaker_diarization")
-async def read_item(model: Model):
+@app.get("/call_gemini")
+async def read_item(model: Request) -> Response:
     most_relevant_speaker = SpeakerDiarization(model.audio).diarization()
-    return {"most_relevant_speaker": most_relevant_speaker}
+    return Response(
+        audio="BASE64_ENCODED_AUDIO",
+        action="go_to_payment"
+    )
