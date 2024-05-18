@@ -20,34 +20,17 @@ This is a Python API built with FastAPI. It uses LangChain to convert text queri
 pip install -r requirements.txt
 ```
 
-2. Create the database:
-
-```
-python database/create_database.py
-```
-
-3. Run the application:
-
-```
-uvicorn app.main:app --reload
-```
-
-## Testing
-
-To run the tests:
-
-```
-pytest app/tests
-```
-
 ## Usage
 
-Send a POST request to `http://localhost:8000/query` with a JSON body containing a `text` field. The `text` field should contain the text query to be converted into SQL.
+Send a POST request to `http://localhost:8000/query` with a JSON body containing a `sentence` field. The `sentence` field should contain the text you ask to the AI.
+
 
 Example:
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"text":"Get all items"}' http://localhost:8000/query
+curl -X POST -H "Content-Type: application/json" -d '{"sentence":"Get all items"}' http://localhost:8000/query
 ```
 
-The API will return the results of the SQL query as a JSON response.
+The API will return the AI response.
+
+You can poke the AI so it starts here asking.
