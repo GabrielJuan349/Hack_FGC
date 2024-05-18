@@ -1,5 +1,7 @@
 import os
-from tools.get_tickets import get_fgc_lines, get_fgc_tickets
+# from tts.transform_Text_Speech import text_to_speech
+from .tts.transform_Text_Speech import text_to_speech
+from .tools.get_tickets import get_fgc_lines, get_fgc_tickets
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -331,6 +333,16 @@ class GeminiService:
                     function_call_dict[function_call.name][key] = value
                 function_calls.append(function_call_dict)
         return function_calls
+    
+    def return_response_json(self, response: str, action: str, options: Dict):
+        base64_audio = text_to_speech(response)
+
+        return  {
+            "audio": base64_audio,
+            "action": action,
+            "options": options
+        }
+                 
 
     def call_functions(self, function_calls: List[Dict]):
         print("Function calls extracted from response:")
@@ -401,71 +413,54 @@ class GeminiService:
 
             print(response.text)
 
-            return  {
-                "audio": response.text,
-                "action": action,
-                "options": options
-            }
+            self.return_response_json(response.text, action, options)
                    
         
         except Exception as e:
             print(str(e))
-            return {
-                "audio": "Error processing the request",
-                "action": "",
-                "options": {}
-            }
+            self.return_response_json("Error processing the request", "", {})
+
     
 
     def text_to_sql(self, text: str) -> str:
-        joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
-
-        print(f"Options: {joined_options}")
-
-        joined_message = f"{text} {joined_options}"
-
-        response = self.chat.send_message(joined_message) # Send the user's question to Gemini
-
-        function_calls = self.extract_function_calls(response)
-
         try:
-            if function_calls:
-                return self.call_functions(function_calls)
-            elif response.text:
-                return {
-                    "audio": response.text,
-                    "action": "just_talk",
-                    "options": {}
-                }
-        except Exception as e:
-            print(str(e))
-            return {
-                "audio": "Error processing the request",
-                "action": "",
-                "options": {}
-            }
-        
-    def initial_poke(self):
-        try:
-            response = self.chat.send_message("Hola")
+            joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
+
+            print(f"Options: {joined_options}")
+
+            joined_message = f"{text} {joined_options}"
+
+            response = self.chat.send_message(joined_message) # Send the user's question to Gemini
 
             function_calls = self.extract_function_calls(response)
 
             if function_calls:
                 return self.call_functions(function_calls)
             elif response.text:
-                return {
-                    "audio": response.text,
-                    "action": "just_talk",
-                    "options": {}
-                }
+                return self.return_response_json(response.text, "just_talk", {})
         except Exception as e:
             print(str(e))
-            return {
-                "audio": "Error processing the request",
-                "action": "",
-                "options": {}
-            }
+            self.return_response_json("Error processing the request", "", {})
+        
+    def initial_poke(self):
+        try:
+            joined_options = " ".join([f"{key}: {value}" for key, value in self.options.items()])
+
+            print(f"Options: {joined_options}")
+
+            joined_message = f"{"Hola"} {joined_options}"
+            
+            response = self.chat.send_message(joined_message)
+
+            function_calls = self.extract_function_calls(response)
+
+            if function_calls:
+                return self.call_functions(function_calls)
+            elif response.text:
+                return self.return_response_json(response.text, "just_talk", {})
+        except Exception as e:
+            print(str(e))
+            self.return_response_json("Error processing the request", "", {})
 
 if __name__ == "__main__":
     gemini_service = GeminiService()

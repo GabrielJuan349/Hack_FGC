@@ -1,4 +1,5 @@
 import base64
+# from google.cloud import texttospeech, speech
 from google.cloud import texttospeech, speech
 
 def text_to_speech(input_text : str, type: str = "base64"):

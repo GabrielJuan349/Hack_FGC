@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from services.gemini_service import GeminiService
+from ..services.gemini_service import GeminiService
 
     
 
@@ -18,6 +18,8 @@ async def query(sentence: str):
 
         response = gemini_service.text_to_sql(sentence)
         
+        print(response)
+
         return response
         
     except Exception as e:
@@ -25,9 +27,11 @@ async def query(sentence: str):
     
 
 @router.get("/poke")
-async def poke_llm(type: str):
+async def poke_llm():
     try:
         response = gemini_service.initial_poke()
+
+        print(response)
         
         return response
 

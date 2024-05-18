@@ -4,10 +4,17 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from classes.speaker_diarization import SpeakerDiarization
-from tts.transform_Text_Speech import speech_to_text
+from ai.app.services.tts.transform_Text_Speech import speech_to_text
+
+from ai.app.api.routes import router
+
+
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
+app.include_router(router)
+
+
 
 
 class Request(BaseModel):
@@ -38,3 +45,9 @@ async def read_item(model: Request) -> Response:
         action="go_to_payment",
         options={"text": text}
     )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
