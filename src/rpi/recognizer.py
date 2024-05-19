@@ -9,7 +9,7 @@ from server_communication import ServerCommunication
 class Recognizer:
     def __init__(self, duration=0.5, timeout=None, phrase_time_limit=None):
         self.recognizer = sr.Recognizer()
-        self.microphone = sr.Microphone(device_index=0)
+        self.microphone = sr.Microphone()
 
         self.duration = duration
         self.timeout = timeout
@@ -50,7 +50,8 @@ if __name__ == "__main__":
          file.write(base64_audio) 
 
     # Example usage
-    server_communication = ServerCommunication({'host': 'http://localhost:8000', 'endpoint': 'call_gemini'})
+    server_communication = ServerCommunication({'host': 'http://192.168.65.203:8000', 'endpoint': 'call_gemini'})
+
     response = server_communication.call_server(frame="frame", location="location",
                                                 audio=base64_audio)
     print(response)
@@ -61,3 +62,6 @@ if __name__ == "__main__":
         file.write(base64.b64decode(response["audio"]))
 
     print("Audio has been saved to audio.wav")
+
+    # play the audio
+    os.system("aplay audio.wav")
