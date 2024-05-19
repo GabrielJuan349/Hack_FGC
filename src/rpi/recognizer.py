@@ -55,4 +55,9 @@ if __name__ == "__main__":
                                                 audio=base64_audio)
     print(response)
 
-    
+
+    # convert the base64 audio to a .wav file
+    with open("audio.wav", "wb") as file:
+        file.write(base64.b64decode(response["audio"]))
+
+    print("Audio has been saved to audio.wav")
