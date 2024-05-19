@@ -4,6 +4,8 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 
 from assets.utils import *
+from rpi.recognizer import Recognizer
+from rpi.server_communication import ServerCommunication
 
 # Constants for styling
 FONT_TYPE = "Arial"
@@ -14,7 +16,7 @@ BUTTON = 40
 HEADER = 20
 FOOTER = 12
 PADDING = 10
-IMAGE_PATH = "src/assets/logo-fgc.png"  # Replace with your image path
+IMAGE_PATH = "assets/logo-fgc.png"  # Replace with your image path
 x= "Samya"
 pages=["main_menu"]
 # Create the main application window
@@ -222,9 +224,167 @@ def comprarTM():
         b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5, 5), sticky="nsew")
 
 
-def frame_ajuda():
-    pass
+def play_audio_from_base64(audio_base64, type="mp3"):
+    import base64
+    import pydub
+    from pydub import AudioSegment
+    from pydub.playback import play
 
+    # Convert the base64 audio to a .wav file
+    audio_data = base64.b64decode(audio_base64)
+    if type == "wav":
+        with open("audio.wav", "wb") as file:
+            file.write(audio_data)
+    else:
+        with open("audio.mp3", "wb") as file:
+            file.write(audio_data)
+
+    # Play the audio
+    if type == "wav":
+        audio = AudioSegment.from_wav("audio.wav")
+    else:
+        audio = AudioSegment.from_mp3("audio.mp3")
+    
+    play(audio)
+
+recognizer = Recognizer(duration=2)
+
+
+
+def listen_to_user(options, onlistencallback, onstopcallback):
+    print("Listening to user...")
+    base64_audio = recognizer.recognize_speech_from_mic(onlistencallback=onlistencallback, onstopcallback=onstopcallback)
+
+    print("Sending audio to the server...")
+    
+    # play_audio_from_base64(base64_audio, type="wav")
+
+    print("Audio has been played")
+
+
+    # Example usage
+    server_communication = ServerCommunication({'host': 'http://127.0.0.1:8000', 'endpoint': 'call_gemini'})
+
+    response = server_communication.call_server(frame="frame", location="location",
+                                                audio=base64_audio, options=options)
+    
+    print(response)
+
+
+    return response
+
+stop_listening = False
+
+def my_mainloop():
+
+    options = {
+    }
+    global info_text
+
+    def onlistencallback():
+        print("Listening...")
+        info_text.configure(text="Listening to you.")
+        # text = ctk.CTkLabel(
+        #             button_frame, text="Listening to you.", text_color='black', font=(FONT_TYPE, BODY))
+        
+        # # put on the middle of the screen
+        # text.place(x=20, y=20)
+        stop_listening = True
+
+    def onstopcallback():
+        print("Stopped listening...")
+        info_text.configure(text="Stopped listening.")
+        # text = ctk.CTkLabel(
+        #             button_frame, text="Stopped listening.", text_color='black', font=(FONT_TYPE, BODY))
+        
+        # # put on the middle of the screen
+        # text.place(x=20, y=20)
+        stop_listening = False
+
+    if not stop_listening:
+
+        response = listen_to_user(options, onlistencallback, onstopcallback)
+
+
+        if response is None:
+            print("Error")
+            # add an error message to the screen
+
+            text = ctk.CTkLabel(
+                button_frame, text="Error", text_color='red', font=(FONT_TYPE, BODY))
+            text.place(x=20, y=20)
+
+            root.after(10, my_mainloop)  # run again after 1000ms (1s)
+
+
+        if "audio" not in response or response["audio"] is None:
+            print("Error")
+            # add an error message to the screen
+
+            text = ctk.CTkLabel(
+                button_frame, text="Error", text_color='red', font=(FONT_TYPE, BODY))
+            text.place(x=20, y=20)
+
+            root.after(10, my_mainloop)  # run again after 1000ms (1s)
+
+            return
+
+        else:
+
+            print("Playing audio")
+            print(response)
+
+            # text = ctk.CTkLabel(
+            #     button_frame, text="Playing", text_color='red', font=(FONT_TYPE, BODY))
+            # text.place(x=20, y=190)
+
+            text = ctk.CTkLabel(
+                button_frame, text=response["plain_text"], text_color='black', font=(FONT_TYPE, BODY))
+            text.place(x=20, y=200)
+
+            play_audio_from_base64(response["audio"])
+
+            if response["action"] != "just_talk":
+                if response["action"] == "go_to_payment":
+                    recarregaTM()
+
+        root.after(10, my_mainloop)  # run again after 1000ms (1s)
+    
+    else:
+        print("I am listening already")
+        root.after(10, my_mainloop)
+        
+            
+ 
+
+def frame_ajuda():
+    import requests
+    
+    options = {
+    }
+    # make get request to the server to poke the AI so it starts speaking
+    response = requests.post("http://127.0.0.1:8000/poke", json=options)
+    
+    # play the audio
+    json = response.json()
+
+    if json["audio"] is None:
+        print("Error")
+        # add an error message to the screen
+
+        text = ctk.CTkLabel(
+            button_frame, text="Error", text_color='red', font=(FONT_TYPE, BODY))
+        text.place(x=20, y=20)
+
+    # text = ctk.CTkLabel(
+    #         button_frame, text="Playing", text_color='red', font=(FONT_TYPE, BODY))
+    # text.place(x=0, y=350)
+
+    play_audio_from_base64(json["audio"])
+
+    root.after(200, my_mainloop)
+    # 
+    
 def recarregaTM():
     refresh()
 
@@ -380,6 +540,7 @@ def reset_main_menu():
     )
     b_ajuda.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
 
+info_text = None
 
 def main_menu():
     refresh()
@@ -409,6 +570,14 @@ def main_menu():
         command=frame_ajuda
     )
     b_ajuda.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
+
+    global info_text
+
+    info_text = ctk.CTkLabel(
+                    button_frame, text="Listening to you.", text_color='black', font=(FONT_TYPE, BODY))
+    
+    # put on the middle of the screen
+    info_text.place(x=20, y=350)
 
 
 # HEADER FRAME

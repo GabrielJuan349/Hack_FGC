@@ -3,7 +3,6 @@ import logging
 import speech_recognition as sr
 import os
 
-from server_communication import ServerCommunication
 
 
 class Recognizer:
@@ -19,9 +18,11 @@ class Recognizer:
         with open(file_path, "rb") as wav_file:
             return base64.b64encode(wav_file.read()).decode("utf-8")
 
-    def recognize_speech_from_mic(self) -> str:
+    def recognize_speech_from_mic(self, onlistencallback, onstopcallback) -> str:
         with self.microphone as source:
             self.recognizer.adjust_for_ambient_noise(source, duration=self.duration)
+            print("Say something!")
+            onlistencallback()
             audio = self.recognizer.listen(source, timeout=self.timeout, phrase_time_limit=self.phrase_time_limit)
 
             # Save the recorded audio to a .wav file in the working directory
@@ -32,6 +33,7 @@ class Recognizer:
             try:
                 # Convert the .wav file to base64
                 audio_base64 = self.wav_to_base64(wav_file_path)
+                onstopcallback()
                 return audio_base64
             finally:
                 # Keep the file for testing, so no deletion here
@@ -40,28 +42,4 @@ class Recognizer:
                     os.remove(wav_file_path)
 
 
-# Example usage:
-if __name__ == "__main__":
-    recognizer = Recognizer(duration=3)
-    base64_audio = recognizer.recognize_speech_from_mic()
 
-    # save the base64 audio to a file
-    with open("base64_audio.txt", "w") as file:
-         file.write(base64_audio) 
-
-    # Example usage
-    server_communication = ServerCommunication({'host': 'http://192.168.65.203:8000', 'endpoint': 'call_gemini'})
-
-    response = server_communication.call_server(frame="frame", location="location",
-                                                audio=base64_audio)
-    print(response)
-
-
-    # convert the base64 audio to a .wav file
-    with open("audio.wav", "wb") as file:
-        file.write(base64.b64decode(response["audio"]))
-
-    print("Audio has been saved to audio.wav")
-
-    # play the audio
-    os.system("aplay audio.wav")

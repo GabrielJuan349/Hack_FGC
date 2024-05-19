@@ -339,6 +339,7 @@ class GeminiService:
 
         return  {
             "audio": base64_audio,
+            "plain_text": response,
             "action": action,
             "options": options
         }

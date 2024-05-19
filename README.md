@@ -42,7 +42,13 @@ Para la diarización de voz, se ha utilizado la librería `pyannote.audio`. Esta
 Para la conversión de voz a texto, se ha utilizado la librería `speech_recognition`. Esta librería permite convertir la voz en texto de forma sencilla y eficiente. La conversión de voz a texto se realiza usando el servicio de Google Cloud Text-to-Speech.
 
 ### Generación de respuestas usando Gemini AI
-**TODO**: Rellenar esta parte.
+
+Para la generación de respuestas, se ha utilizado el servicio de Gemini AI. Este LLM (Large Language Model) permite generar respuestas de forma sencilla y eficiente. Se le ha dado al LLM la información necesaria para poder guiar al usuario en el proceso de compra del billete, y el LLM se encarga de generar las respuestas y preguntas necesarias para completar la compra.
+
+Esto permite una conversación por voz natural y fluida, que ayuda al usuario a completar la compra de forma sencilla y eficiente. Este llm, tiene herramientas que le permiten acceder a los datos de FGC para ayudar en la compra de billetes, y se comunica con la maquina autoventa para ir actualizando la interfaz de usuario.
+
+
+
 
 ### Text-to-Speech
 Para la conversión de texto a voz, se ha utilizado el servicio de Google Cloud Platform. Este servicio permite convertir texto en voz de forma sencilla y eficiente.

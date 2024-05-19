@@ -55,7 +55,7 @@ async def read_item(model: Request) -> Response:
     return response
 
 
-@router.post("/query")
+@app.post("/query")
 async def query(sentence: str, options: dict):
     print("sentence: ", sentence)
     try:
@@ -69,7 +69,7 @@ async def query(sentence: str, options: dict):
         raise HTTPException(status_code=400, detail=str(e))
     
 
-@router.get("/poke")
+@app.post("/poke")
 async def poke_llm(options: dict):
     try:
         response = gemini_service.initial_poke(options)
