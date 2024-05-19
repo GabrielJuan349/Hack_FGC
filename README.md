@@ -17,7 +17,9 @@ fastapi dev ./src/cloud/main.py
 ```
 
 ### Máquinas autoventa
-**TODO**: Rellenar esta parte.
+Para poder ejecutar la interfaz gráfica se tiene que que usar el comando 'python main.py'.
+El menu principal deberia aparecer de esta manera:
+![Esquma de diseño](main_menu.png)
 
 ## Explicación
 El usuario puede acceder a la aplicación a través de la máquina autoventa. Con una interfaz muy sencilla, el usuario puede seleccionar el trayecto que desea realizar y el tipo de billete que necesita. La máquina autoventa se encarga de enviar los datos a la aplicación en la nube, que se encarga de gestionar los datos de los usuarios y atenderlos usando IA generativa.
