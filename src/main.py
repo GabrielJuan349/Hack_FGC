@@ -250,6 +250,7 @@ def play_audio_from_base64(audio_base64, type="mp3"):
 recognizer = Recognizer(duration=2)
 
 
+waiting_response = False
 
 def listen_to_user(options, onlistencallback, onstopcallback):
     print("Listening to user...")
@@ -261,7 +262,8 @@ def listen_to_user(options, onlistencallback, onstopcallback):
 
     print("Audio has been played")
 
-
+    global waiting_response
+    waiting_response = True
     # Example usage
     server_communication = ServerCommunication({'host': 'http://127.0.0.1:8000', 'endpoint': 'call_gemini'})
 
@@ -269,7 +271,7 @@ def listen_to_user(options, onlistencallback, onstopcallback):
                                                 audio=base64_audio, options=options)
     
     print(response)
-
+    waiting_response = False
 
     return response
 
@@ -305,6 +307,9 @@ def my_mainloop():
 
         response = listen_to_user(options, onlistencallback, onstopcallback)
 
+        if waiting_response:
+            print("Waiting for response")
+            root.after(10, my_mainloop)
 
         if response is None:
             print("Error")
