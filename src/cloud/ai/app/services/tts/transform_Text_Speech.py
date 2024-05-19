@@ -1,4 +1,5 @@
 import base64
+# from google.cloud import texttospeech, speech
 from google.cloud import texttospeech, speech
 
 def text_to_speech(input_text : str, type: str = "base64"):
@@ -41,7 +42,7 @@ def speech_to_text(audio_encoded : str):
 
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=48000,
+        sample_rate_hertz=44100,
         language_code="es-ES",
     )
 
