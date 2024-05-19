@@ -22,6 +22,11 @@ root = tk.Tk()
 root.title("FGC - Ferrocarrils de la Generalitat de Catalunya")
 root.geometry("400x400+0+500")  # Set the window size
 
+def refresh():
+    for widget in button_frame.winfo_children():
+        widget.destroy()
+
+
 def recarregaTM():
     print("Recarregar T-Mobilitat")
 
@@ -134,47 +139,58 @@ def frame_tincTM():
 
 def comprarTM():
     refresh()
+    gi = Get_info()
+    all_tickets = gi.get_tickets("Lleida - La Pobla de Segur")
+
+    def update_price(event=None):     
+        price = gi.get_ticket("Lleida - La Pobla de Segur", str(tticket.get()), int(zones.get()), int(quant.get()))
+        preu_value.configure(text=f"{price:.2f} €")
+        print(str(tticket.get()), int(zones.get()), quant.get())
 
     header = ctk.CTkLabel(
         button_frame, text=f"Compra", text_color='black', font=(FONT_TYPE, BODY))
-    header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
+    header.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="nw")
 
-    tticket = ctk.CTkLabel(
+    t = ctk.CTkLabel(
         button_frame, text=f"Tipus de bitllet", text_color='gray', font=(FONT_TYPE, BODY))
-    tticket.grid(row=1, column=0, padx=20, pady=(0,0), sticky="nw")
+    t.grid(row=1, column=0, padx=20, pady=(0, 0), sticky="nw")
     tticket = ctk.CTkComboBox(
-        button_frame, values=get_tipus_from_dataset(), text_color='black',width=250, font=(FONT_TYPE, BODY))
-    tticket.grid(row=2, column=0, padx=20, pady=(0,ENTRE_TEXT), sticky="nw")
+        button_frame, values=all_tickets, text_color='black', width=250, font=(FONT_TYPE, BODY))
+    tticket.grid(row=2, column=0, padx=20, pady=(0, ENTRE_TEXT), sticky="nw")
 
-    zones = ctk.CTkLabel(
+    z = ctk.CTkLabel(
         button_frame, text=f"Zones", text_color='gray', font=(FONT_TYPE, BODY))
-    zones.grid(row=1, column=1, padx=20, pady=(ENTRE_TEXT,0), sticky="nw")
-    zones = ctk.CTkLabel(
-        button_frame, text="-   1   +", text_color='black', font=(FONT_TYPE, BODY))
-    zones.grid(row=2, column=1, padx=20, pady=(0,40), sticky="nw")
+    z.grid(row=1, column=1, padx=20, pady=(ENTRE_TEXT, 0), sticky="nw")
+    zones = ctk.CTkComboBox(
+        button_frame, values=['1', '2', '3', '4', '5'], text_color='black', font=(FONT_TYPE, BODY))
+    zones.grid(row=2, column=1, padx=20, pady=(0, 40), sticky="nw")
     
-    quant = ctk.CTkLabel(
+    q = ctk.CTkLabel(
         button_frame, text=f"Quantitat", text_color='gray', font=(FONT_TYPE, BODY))
-    quant.grid(row=3, column=1, padx=20, pady=(0,0), sticky="nw")
-    quant = ctk.CTkLabel(
-        button_frame, text="-   1   +", text_color='black', font=(FONT_TYPE, BODY))
-    quant.grid(row=4, column=1, padx=20, pady=(0,40), sticky="nw")
+    q.grid(row=3, column=1, padx=20, pady=(0, 0), sticky="nw")
+    quant = ctk.CTkComboBox(
+        button_frame, values=['1', '2', '3', '4', '5'], text_color='black', font=(FONT_TYPE, BODY))
+    quant.grid(row=4, column=1, padx=20, pady=(0, 40), sticky="nw")
     
+    p = ctk.CTkLabel(
+        button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY + 4))
+    p.grid(row=3, column=0, padx=20, pady=(0, 0), sticky="nw")
+    preu_value = ctk.CTkLabel(
+        button_frame, text="0,00 €", text_color='black', font=(FONT_TYPE, BODY + 4))
+    preu_value.grid(row=4, column=0, padx=20, pady=(0, 40), sticky="nw")
 
-    quant = ctk.CTkLabel(
-        button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY+4))
-    quant.grid(row=3, column=0, padx=20, pady=(0,0), sticky="nw")
-    quant = ctk.CTkLabel(
-        button_frame, text="4,50€", text_color='black', font=(FONT_TYPE, BODY+4))
-    quant.grid(row=4, column=0, padx=20, pady=(0,40), sticky="nw")
-
+    # Bind the update_price function to the Combobox events
+    tticket.bind("<<ComboboxSelected>>", update_price)
+    zones.bind("<<ComboboxSelected>>", update_price)
+    quant.bind("<<ComboboxSelected>>", update_price)
 
     b_recarregaTM = ctk.CTkButton(
         button_frame, text="Pagar", height=80, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
         command=pagar
     )
-    b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5,5), sticky="nsew")
+    b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5, 5), sticky="nsew")
+
 
 def frame_ajuda():
     pass
@@ -223,13 +239,11 @@ def recarregaTM():
 
 
 def pagar():
-    pass
+    refresh()
+    success_message = ctk.CTkLabel(
+        button_frame, text="Payment Successful!", text_color='green', font=(FONT_TYPE, BODY))
+    success_message.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="nw")
 
-
-
-def refresh():
-    for widget in button_frame.winfo_children():
-        widget.destroy()
 
 def novaTM():
     refresh()
