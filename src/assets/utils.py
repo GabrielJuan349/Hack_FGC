@@ -58,6 +58,7 @@ class Get_info:
         """
         ticket = self._fee_bd[(self._fee_bd["Linea"] == location) & (self._fee_bd["Billete"] == ticket) & (self._fee_bd["Zonas"]==zona)]
         if not ticket.empty:
-            return (ticket["Precio"].values[0], ticket["Precio"].values[0]*num_bitllets)
+            print(ticket["Precio"].values[0], ticket["Precio"].values[0]*num_bitllets)
+            return ticket["Precio"].values[0]*num_bitllets
         else:
             return None

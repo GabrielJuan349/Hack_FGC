@@ -41,7 +41,7 @@ def carregarTM():
     header.grid(row=0, column=0, padx=20, pady=(20,20), sticky="nw")
 
 def frame_tincTM():
-    recarrega = False
+    recarrega = True
     refresh()
     if recarrega:
         # Mostra el nom de l'usuari i la informació de la T-Mobilitat
@@ -142,11 +142,6 @@ def comprarTM():
     gi = Get_info()
     all_tickets = gi.get_tickets("Lleida - La Pobla de Segur")
 
-    def update_price(event=None):     
-        price = gi.get_ticket("Lleida - La Pobla de Segur", str(tticket.get()), int(zones.get()), int(quant.get()))
-        preu_value.configure(text=f"{price:.2f} €")
-        print(str(tticket.get()), int(zones.get()), quant.get())
-
     header = ctk.CTkLabel(
         button_frame, text=f"Compra", text_color='black', font=(FONT_TYPE, BODY))
     header.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="nw")
@@ -162,7 +157,7 @@ def comprarTM():
         button_frame, text=f"Zones", text_color='gray', font=(FONT_TYPE, BODY))
     z.grid(row=1, column=1, padx=20, pady=(ENTRE_TEXT, 0), sticky="nw")
     zones = ctk.CTkComboBox(
-        button_frame, values=['1', '2', '3', '4', '5'], text_color='black', font=(FONT_TYPE, BODY))
+        button_frame, values=['1', '2'], text_color='black', font=(FONT_TYPE, BODY))
     zones.grid(row=2, column=1, padx=20, pady=(0, 40), sticky="nw")
     
     q = ctk.CTkLabel(
@@ -179,17 +174,52 @@ def comprarTM():
         button_frame, text="0,00 €", text_color='black', font=(FONT_TYPE, BODY + 4))
     preu_value.grid(row=4, column=0, padx=20, pady=(0, 40), sticky="nw")
 
-    # Bind the update_price function to the Combobox events
-    tticket.bind("<<ComboboxSelected>>", update_price)
-    zones.bind("<<ComboboxSelected>>", update_price)
-    quant.bind("<<ComboboxSelected>>", update_price)
+    def comprarTMresume():
+        gi = Get_info()
+        all_tickets = gi.get_tickets("Lleida - La Pobla de Segur")    
+        price = gi.get_ticket("Lleida - La Pobla de Segur", str(tticket.get()), int(zones.get()), int(quant.get()))
+        print(str(tticket.get()), int(zones.get()), quant.get())
+
+        p = ctk.CTkLabel(
+            button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY + 4))
+        p.grid(row=3, column=0, padx=20, pady=(0, 0), sticky="nw")
+        preu_value = ctk.CTkLabel(
+            button_frame, text=f"{price} €", text_color='black', font=(FONT_TYPE, BODY + 4))
+        preu_value.grid(row=4, column=0, padx=20, pady=(0, 40), sticky="nw")
+
+        b_recarregaTM = ctk.CTkButton(
+            button_frame, text="Pagar", height=80, fg_color="#97d700",
+            hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
+            command=pagar
+        )
+        b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5, 5), sticky="nsew")
 
     b_recarregaTM = ctk.CTkButton(
-        button_frame, text="Pagar", height=80, fg_color="#97d700",
+        button_frame, text="Resum", height=80, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
-        command=pagar
+        command=comprarTMresume
     )
     b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5, 5), sticky="nsew")
+
+    def comprarTMresume():
+        gi = Get_info()
+        all_tickets = gi.get_tickets("Lleida - La Pobla de Segur")    
+        price = gi.get_ticket("Lleida - La Pobla de Segur", str(tticket.get()), int(zones.get()), int(quant.get()))
+        print(str(tticket.get()), int(zones.get()), quant.get())
+
+        p = ctk.CTkLabel(
+            button_frame, text=f"Preu", text_color='gray', font=(FONT_TYPE, BODY + 4))
+        p.grid(row=3, column=0, padx=20, pady=(0, 0), sticky="nw")
+        preu_value = ctk.CTkLabel(
+            button_frame, text=f"{price} €", text_color='black', font=(FONT_TYPE, BODY + 4))
+        preu_value.grid(row=4, column=0, padx=20, pady=(0, 40), sticky="nw")
+
+        b_recarregaTM = ctk.CTkButton(
+            button_frame, text="Pagar", height=80, fg_color="#97d700",
+            hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
+            command=comprarTMresume
+        )
+        b_recarregaTM.grid(row=7, column=0, columnspan=3, padx=5, pady=(5, 5), sticky="nsew")
 
 
 def frame_ajuda():
@@ -241,8 +271,14 @@ def recarregaTM():
 def pagar():
     refresh()
     success_message = ctk.CTkLabel(
-        button_frame, text="Payment Successful!", text_color='green', font=(FONT_TYPE, BODY))
-    success_message.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="nw")
+        button_frame, text="Gracies per la seva compra!", text_color='green', font=(FONT_TYPE, BUTTON))
+    success_message.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="nswe")
+
+def nouSoci():
+    refresh()
+    success_message = ctk.CTkLabel(
+        button_frame, text="Gracies per fer-te\nla T-Mobilitat!", text_color='green', font=(FONT_TYPE, BUTTON))
+    success_message.grid(row=0, column=0, padx=20, pady=(20, 20), sticky="nswe")
 
 
 def novaTM():
@@ -291,7 +327,7 @@ def novaTM():
     b_recarregaTM = ctk.CTkButton(
         button_frame, text="Següent", height=80, fg_color="#97d700",
         hover_color="#79ac20", text_color='black', font=(FONT_TYPE, BUTTON),
-        command=pagar
+        command=nouSoci
     )
     b_recarregaTM.grid(row=7, column=0, columnspan=2, padx=5, pady=(5,5), sticky="nsew")
 
@@ -346,6 +382,7 @@ def reset_main_menu():
 
 
 def main_menu():
+    refresh()
     button_frame.grid(row=1, column=0, columnspan=2, sticky="nsew")
     button_frame.columnconfigure(0, weight=1)
     button_frame.columnconfigure(1, weight=1)
@@ -382,11 +419,11 @@ header_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
 img = Image.open(IMAGE_PATH)
 img = img.resize((int(img.width / 1.6), int(img.height / 1.6)))  # Resize the image if necessary
 photo = ImageTk.PhotoImage(img)
-img_label = tk.Label(header_frame, image=photo)
+img_label = ctk.CTkButton(header_frame, image=photo, text="", fg_color="white", hover_color="white", command=main_menu)
 img_label.pack(side="left", padx=(20, 50))
 
 # HEADER TEXT
-header_label = ttk.Label(header_frame, text="Nou Sistema de venda de títols de transport", font=(FONT_TYPE, HEADER))
+header_label = tk.Label(header_frame, text="Nou Sistema de venda de títols de transport", font=(FONT_TYPE, HEADER))
 header_label.pack(side="left", padx=(10, 10))
 
 # MAIN MENU BUTTONS
